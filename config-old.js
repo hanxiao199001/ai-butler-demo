@@ -9,7 +9,7 @@ module.exports = {
   
   // 微信
   wechat: {
-    token: process.env.WECHAT_TOKEN || 'ai_butler_token_2026',
+    token: process.env.WECHAT_TOKEN,
     appId: process.env.WECHAT_APPID,
     appSecret: process.env.WECHAT_APPSECRET
   },
