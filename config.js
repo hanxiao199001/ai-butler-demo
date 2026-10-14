@@ -1,5 +1,26 @@
 require("dotenv").config();
 
+// 缺失或空白时微信签名可被仅凭 timestamp、nonce 伪造，应用也不能发消息或对话
+const REQUIRED_SECRET_ENV_VARS = [
+  "WECHAT_TOKEN",
+  "WECHAT_APPID",
+  "WECHAT_APPSECRET",
+  "DEEPSEEK_API_KEY"
+];
+
+function assertRequiredSecrets(env = process.env) {
+  const missing = REQUIRED_SECRET_ENV_VARS.filter((key) => {
+    const value = env[key];
+    return typeof value !== "string" || value.trim() === "";
+  });
+
+  if (missing.length > 0) {
+    throw new Error(
+      `启动失败：缺少必需的环境变量 ${missing.join("、")}。请在 .env 中配置非空值后再启动。`
+    );
+  }
+}
+
 module.exports = {
   deepseek: {
     apiKey: process.env.DEEPSEEK_API_KEY,
@@ -7,7 +28,7 @@ module.exports = {
   },
   
   wechat: {
-    token: process.env.WECHAT_TOKEN || "ai_butler_token_2026",
+    token: process.env.WECHAT_TOKEN,
     appId: process.env.WECHAT_APPID,
     appSecret: process.env.WECHAT_APPSECRET
   },
@@ -69,5 +90,8 @@ module.exports = {
       exercise: { time: "20:00", message: "今天运动了吗？动一动更健康 💪" },
       sleep: { time: "23:00", message: "该休息了，早睡早起身体好 💤" }
     }
-  }
+  },
+
+  REQUIRED_SECRET_ENV_VARS,
+  assertRequiredSecrets
 };

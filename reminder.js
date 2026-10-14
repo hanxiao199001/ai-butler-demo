@@ -1,6 +1,9 @@
 const cron = require("node-cron");
 const { DB } = require("./database");
-const wechatService = require("./wechat");
+const WechatService = require("./wechat");
+
+// sendCustomMessage 依赖实例上的 access_token 缓存，不能直接在类上调用
+const wechatService = new WechatService();
 
 class ReminderService {
   constructor() {
