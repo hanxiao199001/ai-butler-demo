@@ -11,10 +11,31 @@ class WechatService {
   
   static verifySignature(signature, timestamp, nonce) {
     const token = config.wechat.token;
-    const arr = [token, timestamp, nonce].sort();
-    const str = arr.join("");
-    const hash = crypto.createHash("sha1").update(str).digest("hex");
-    return hash === signature;
+    // 空 token 参与拼接时会被丢掉，签名退化为 sha1(timestamp + nonce)，可被伪造
+    if (typeof token !== "string" || token.trim() === "") {
+      return false;
+    }
+    if (
+      typeof signature !== "string" ||
+      typeof timestamp !== "string" ||
+      typeof nonce !== "string" ||
+      signature.length === 0 ||
+      timestamp.length === 0 ||
+      nonce.length === 0
+    ) {
+      return false;
+    }
+
+    const expected = crypto
+      .createHash("sha1")
+      .update([token, timestamp, nonce].sort().join(""))
+      .digest("hex");
+    const actualBuf = Buffer.from(signature);
+    const expectedBuf = Buffer.from(expected);
+    if (actualBuf.length !== expectedBuf.length) {
+      return false;
+    }
+    return crypto.timingSafeEqual(actualBuf, expectedBuf);
   }
   
   static async parseXML(xml) {

@@ -1,7 +1,9 @@
 const sqlite3 = require("sqlite3").verbose();
 const path = require("path");
 
-const db = new sqlite3.Database(path.join(__dirname, "butler.db"));
+// 测试可设置 BUTLER_DB_PATH=:memory:，避免写入仓库根目录的 butler.db
+const dbPath = process.env.BUTLER_DB_PATH || path.join(__dirname, "butler.db");
+const db = new sqlite3.Database(dbPath);
 
 db.serialize(() => {
   // 用户表（增加个性化字段）

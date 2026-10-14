@@ -1,6 +1,14 @@
+const config = require("./config");
+
+try {
+  config.assertRequiredSecrets();
+} catch (error) {
+  console.error(error.message);
+  process.exit(1);
+}
+
 const express = require("express");
 const bodyParser = require("body-parser");
-const config = require("./config");
 const { DB } = require("./database");
 const deepseek = require("./deepseek");
 const WechatService = require("./wechat");
